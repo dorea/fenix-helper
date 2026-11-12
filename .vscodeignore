@@ -1,0 +1,19 @@
+# 源码与构建输入不需要进 vsix
+src/
+test/
+tsconfig.json
+package-lock.json
+esbuild.mjs
+.vscode/
+.history/
+DESIGN.md
+*.vsix
+# 测试产物与 sourcemap（extension.js 内的 sourceMappingURL 指向的 map 不随包发布）
+out/sanity.mjs
+out/smoke.mjs
+out/*.map
+
+# 仓库/发布相关文件不进包
+.github/
+PUBLISH.md
+.gitignore

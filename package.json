@@ -1,0 +1,135 @@
+{
+  "name": "fenix-helper",
+  "displayName": "Fenix Helper (Spring Data JPA)",
+  "description": "Smart support for blinkfox/fenix XML: jump between @QueryFenix methods and fenix XML statements, tag/attribute completion, #{param} completion, and alignment diagnostics",
+  "version": "0.5.1",
+  "publisher": "dodo",
+  "license": "MIT",
+  "icon": "media/icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "fenix",
+    "spring data jpa",
+    "jpa",
+    "sql",
+    "xml",
+    "java"
+  ],
+  "activationEvents": [
+    "onLanguage:xml",
+    "workspaceContains:**/fenix/**",
+    "workspaceContains:**/*-fenix/**"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "fenixHelper.newXml",
+        "title": "Fenix: New Fenix XML file"
+      },
+      {
+        "command": "fenixHelper.previewSql",
+        "title": "Fenix: Preview SQL"
+      },
+      {
+        "command": "fenixHelper.filterTree",
+        "title": "Fenix: Filter Outline",
+        "icon": "$(filter)"
+      },
+      {
+        "command": "fenixHelper.refreshTree",
+        "title": "Fenix: Refresh Outline",
+        "icon": "$(refresh)"
+      }
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "fenixExplorer",
+          "name": "FENIX"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "fenixHelper.filterTree",
+          "when": "view == fenixExplorer",
+          "group": "navigation"
+        },
+        {
+          "command": "fenixHelper.refreshTree",
+          "when": "view == fenixExplorer",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "fenixHelper.filterTree",
+          "when": "false"
+        },
+        {
+          "command": "fenixHelper.refreshTree",
+          "when": "false"
+        }
+      ]
+    },
+    "grammars": [
+      {
+        "path": "./syntaxes/fenix-sql-injection.tmLanguage.json",
+        "injectTo": [
+          "text.xml"
+        ],
+        "scopeName": "inline.fenix-sql"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "xml",
+        "path": "./snippets/fenix.json"
+      }
+    ],
+    "configuration": {
+      "title": "Fenix Helper",
+      "properties": {
+        "fenixHelper.xmlGlobs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "markdownDescription": "额外的 fenix XML 文件 glob（fenix 的 `xml-locations` 可自定义目录名）。默认会自动识别 `fenix`、`*-fenix` 目录，并读取 `application*.yml/properties` 里的 `fenix.xml-locations`。"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "build": "npm run typecheck && node esbuild.mjs",
+    "test": "node esbuild.mjs && node out/sanity.mjs",
+    "package": "vsce package --allow-missing-repository --no-dependencies",
+    "watch": "node esbuild.mjs --watch",
+    "vscode:prepublish": "npm run build",
+    "smoke": "node node_modules/esbuild/bin/esbuild --bundle test/smoke.ts --outfile=out/smoke.mjs --format=esm --platform=node --log-level=error && echo 'built out/smoke.mjs'"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^4.1.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.7.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dorea/fenix-helper.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dorea/fenix-helper/issues"
+  }
+}

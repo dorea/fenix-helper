@@ -1,0 +1,52 @@
+{
+  "fenixs file skeleton": {
+    "prefix": "fxs",
+    "body": [
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>",
+      "<fenixs namespace=\"${1:com.example.dao.XxxDao}\">",
+      "",
+      "    <fenix id=\"${2:method1}\">",
+      "        SELECT",
+      "            *",
+      "        FROM",
+      "            t_table t",
+      "        WHERE",
+      "            1 = 1",
+      "        <andEqual field=\"t.col\" value=\"${3:p.col}\" match=\"${4:p.col} != empty\"/>",
+      "    </fenix>",
+      "",
+      "</fenixs>"
+    ],
+    "description": "Fenix XML 文件骨架"
+  },
+  "fenix statement": {
+    "prefix": "fx",
+    "body": [
+      "<fenix id=\"${1:method1}\">",
+      "    SELECT",
+      "        *",
+      "    FROM",
+      "        t_table t",
+      "    WHERE",
+      "        1 = 1",
+      "    $0",
+      "</fenix>"
+    ],
+    "description": "Fenix 语句块（id = Dao 方法名）"
+  },
+  "where block": {
+    "prefix": "fxwhere",
+    "body": ["<where>", "    $0", "</where>"],
+    "description": "WHERE 片段（自动修剪开头 AND/OR）"
+  },
+  "if block": {
+    "prefix": "fxif",
+    "body": ["@if{${1:cond != empty}}", "    $0", "@end{}"],
+    "description": "Fenix @if 条件模板块"
+  },
+  "param interpolation": {
+    "prefix": "fxp",
+    "body": ["#{${1:param.field}}"],
+    "description": "#{param.field} 参数插值"
+  }
+}
