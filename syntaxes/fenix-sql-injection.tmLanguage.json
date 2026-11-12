@@ -1,0 +1,209 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "scopeName": "inline.fenix-sql",
+  "injectionSelector": "L:text.xml",
+  "patterns": [
+    {
+      "include": "#fenix-block"
+    }
+  ],
+  "repository": {
+    "fenix-block": {
+      "begin": "(<fenix(?=[\\s/>])[^>]*>)",
+      "beginCaptures": {
+        "1": {
+          "name": "meta.tag.xml"
+        }
+      },
+      "end": "(</fenix>)",
+      "endCaptures": {
+        "1": {
+          "name": "meta.tag.xml"
+        }
+      },
+      "name": "meta.embedded.sql.fenix",
+      "patterns": [
+        {
+          "include": "#fenix-inner-tag"
+        },
+        {
+          "include": "#sql-content"
+        }
+      ]
+    },
+    "fenix-inner-tag": {
+      "begin": "(<)((?i:in|andIn|orIn|notIn|andNotIn|orNotIn|notEqual|equal|andEqual|orEqual|andNotEqual|orNotEqual|greaterThan|andGreaterThan|orGreaterThan|lessThan|andLessThan|orLessThan|greaterThanEqual|andGreaterThanEqual|orGreaterThanEqual|lessThanEqual|andLessThanEqual|orLessThanEqual|startsWith|andStartsWith|orStartsWith|notStartsWith|andNotStartsWith|orNotStartsWith|endsWith|andEndsWith|orEndsWith|notEndsWith|andNotEndsWith|orNotEndsWith|like|andLike|orLike|notLike|andNotLike|orNotLike|between|andBetween|orBetween|isNull|andIsNull|orIsNull|isNotNull|andIsNotNull|orIsNotNull|text|import|choose|set|where|trimWhere)\\b)",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.xml"
+        },
+        "2": {
+          "name": "entity.name.tag.fenix.xml"
+        }
+      },
+      "end": "(/?>)",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.tag.xml"
+        }
+      },
+      "name": "meta.tag.fenix.xml",
+      "patterns": [
+        {
+          "include": "#fenix-attr"
+        }
+      ]
+    },
+    "fenix-attr": {
+      "patterns": [
+        {
+          "name": "entity.other.attribute-name.fenix.xml",
+          "match": "(?:[\\w.-]+)"
+        },
+        {
+          "name": "string.quoted.double.xml",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "include": "#fenix-expr-in-string"
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.xml",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "include": "#fenix-expr-in-string"
+            }
+          ]
+        }
+      ]
+    },
+    "fenix-expr-in-string": {
+      "comment": "属性值里只有表达式内部才是参数引用；field/id/resultType 等普通值不应着色",
+      "patterns": [
+        {
+          "include": "#fenix-mvel"
+        },
+        {
+          "include": "#fenix-named-param"
+        },
+        {
+          "name": "meta.expression.attribute.fenix",
+          "begin": "(?<![#@])\\{",
+          "end": "\\}",
+          "patterns": [
+            {
+              "name": "variable.parameter.fenix",
+              "match": "[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*"
+            },
+            {
+              "name": "constant.language.mvel.fenix",
+              "match": "\\b(?:empty|null|true|false)\\b"
+            },
+            {
+              "name": "keyword.operator.mvel.fenix",
+              "match": "&&|\\|\\||!|==|!=|<=|>=|<|>"
+            }
+          ]
+        }
+      ]
+    },
+    "fenix-mvel": {
+      "patterns": [
+        {
+          "name": "keyword.control.mvel.fenix",
+          "match": "@(?:if|elseif|else|end)\\{"
+        },
+        {
+          "name": "meta.embedded.expression.fenix",
+          "begin": "@\\{",
+          "end": "\\}",
+          "patterns": [
+            {
+              "name": "variable.parameter.fenix",
+              "match": "[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*"
+            },
+            {
+              "name": "constant.language.mvel.fenix",
+              "match": "\\b(?:empty|null|true|false)\\b"
+            },
+            {
+              "name": "keyword.operator.mvel.fenix",
+              "match": "&&|\\|\\||!|==|!=|<=|>=|<|>"
+            }
+          ]
+        },
+        {
+          "name": "constant.character.escape.fenix",
+          "match": "@@"
+        }
+      ]
+    },
+    "fenix-named-param": {
+      "patterns": [
+        {
+          "name": "meta.embedded.expression.fenix",
+          "begin": "#\\{",
+          "end": "\\}",
+          "patterns": [
+            {
+              "name": "variable.parameter.fenix",
+              "match": "[A-Za-z_$][\\w$]*(?:\\.[A-Za-z_$][\\w$]*)*"
+            }
+          ]
+        }
+      ]
+    },
+    "sql-content": {
+      "patterns": [
+        {
+          "name": "comment.line.double-dash.sql",
+          "match": "--.*$"
+        },
+        {
+          "include": "#fenix-mvel"
+        },
+        {
+          "include": "#fenix-named-param"
+        },
+        {
+          "name": "string.quoted.single.sql",
+          "begin": "'",
+          "end": "'(?!')",
+          "patterns": [
+            {
+              "name": "constant.character.escape.sql",
+              "match": "''"
+            },
+            {
+              "include": "#fenix-mvel"
+            },
+            {
+              "include": "#fenix-named-param"
+            }
+          ]
+        },
+        {
+          "name": "keyword.other.DML.sql",
+          "match": "(?i)\\b(SELECT|FROM|WHERE|AND|OR|NOT|INSERT|INTO|VALUES|UPDATE|DELETE|SET|JOIN|LEFT|RIGHT|INNER|OUTER|FULL|CROSS|ON|GROUP|BY|ORDER|HAVING|LIMIT|OFFSET|UNION|ALL|DISTINCT|AS|IS|NULL|LIKE|BETWEEN|IN|EXISTS|CASE|WHEN|THEN|ELSE|END|ASC|DESC|TOP|WITH|OVER|PARTITION|ROW_NUMBER)\\b"
+        },
+        {
+          "name": "support.function.aggregate.sql",
+          "match": "(?i)\\b(COUNT|SUM|AVG|MIN|MAX|COALESCE|NULLIF|CAST|CONVERT|UPPER|LOWER|SUBSTRING|TRIM|LEN|LENGTH|DATEADD|DATEDIFF|GETDATE|CONCAT|ISNULL|CHARINDEX|REPLACE)\\b(?=\\s*\\()"
+        },
+        {
+          "name": "constant.numeric.sql",
+          "match": "\\b\\d+(\\.\\d+)?\\b"
+        },
+        {
+          "name": "keyword.operator.comparison.sql",
+          "match": "<>|!=|<=|>=|=|<|>"
+        }
+      ]
+    }
+  }
+}

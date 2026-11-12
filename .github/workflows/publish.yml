@@ -1,0 +1,39 @@
+name: Publish Extension
+
+# 触发方式二选一：
+#   1) 打 tag（推荐）：git tag v0.5.1 && git push origin v0.5.1
+#   2) 手动触发：Actions 页面点 Run workflow
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # Trusted Publishing 必需：允许申请 GitHub OIDC token
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check and build
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+      # 用 GitHub OIDC token 换取 Marketplace 短期凭据（15 分钟有效），
+      # 不保存任何 PAT / 长期密钥。
+      - name: Publish to VS Code Marketplace
+        run: npx @vscode/vsce publish --oidc --no-dependencies --skip-duplicate
