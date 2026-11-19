@@ -2,7 +2,7 @@
   "name": "fenix-helper",
   "displayName": "Fenix Helper (Spring Data JPA)",
   "description": "Smart support for blinkfox/fenix XML: jump between @QueryFenix methods and fenix XML statements, tag/attribute completion, #{param} completion, and alignment diagnostics",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "publisher": "dodo",
   "license": "MIT",
   "icon": "media/icon.png",
